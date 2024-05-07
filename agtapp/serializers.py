@@ -32,6 +32,12 @@ class LoginSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68, min_length=6,write_only=True)
     username = serializers.CharField(max_length=255, min_length=3)
     tokens = serializers.SerializerMethodField()
+    first_name = serializers.SerializerMethodField('get_first_name')
+
+    def get_first_name(self, obj):
+        user = User.objects.get(username=obj['username'])
+        return user.first_name
+
     def get_tokens(self, obj):
         user = User.objects.get(username=obj['username'])
         return {
@@ -40,7 +46,7 @@ class LoginSerializer(serializers.ModelSerializer):
         }
     class Meta:
         model = User
-        fields = ['password','username','tokens']
+        fields = ['password','username','tokens', 'first_name']
     def validate(self, attrs):
         username = attrs.get('username','')
         password = attrs.get('password','')
